@@ -26,7 +26,7 @@ date: 2018-02-26 15:39:23
 联网后
 ```
 wget raw.githubusercontent.com/youthug/ArchLinux-Installer/master/live.sh
-#或者使用短链 wget git.io/vAoFI -O live.sh
+#或者使用短链 wget git.io/vA646 -O live.sh
 chmod +x lice.sh
 ./live.sh
 ```
