@@ -16,13 +16,13 @@ Y() {
 R() {
 	echo -e "\033[31m$1\033[0m"
 }
-# White on Black
+# Black on White
 BoW() {
-	echo -e "\033[47;37m$1\033[0m"
+	echo -e "\033[47;30m$1\033[0m"
 }
-# White on Green
-WoG() {
-	echo -e "\033[42;37m$1\033[0m"
+# Black on Green
+BoG() {
+	echo -e "\033[42;30m$1\033[0m"
 }
 # White on Yellow
 WoY() {
@@ -48,7 +48,7 @@ UserCommand() {
 
 ## 分区 ##
 Partition() {
-	WoG "(1/5)=========> Partition\033[0m"
+	BoG "(1/5)=========> Partition\033[0m"
 	FLAG=0
 	G "> Adjust partition"
 	Y "Do you want to partition your disk?"
@@ -202,7 +202,7 @@ MountPartition() {
 
 ## 挂载分区 ##
 Mount() {
-	WoG "(2/5)=========> Mount"
+	BoG "(2/5)=========> Mount"
 	MountPartition "/mnt"
 	MountPartition "/mnt/boot"
 	MountPartition "/mnt/home"
@@ -224,7 +224,7 @@ Mount() {
 
 ## 软件源 ##
 EditMirrorList() {
-	WoG "(3/5)=========> Mirror"
+	BoG "(3/5)=========> Mirror"
 	if [ ! -f /etc/pacman.d/mirrorlist.bak ]; then
 		Y "Backup /etc/pacman.d/mirrorlist TO /etc/pacman.d/mirrorlist.bak ..."
 		cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
@@ -270,7 +270,7 @@ EditMirrorList() {
 
 ## 安装基本系统 ##
 InstallBaseSystem() {
-	WoG "(4/5)=========> Install the Base Packages"
+	BoG "(4/5)=========> Install the Base Packages"
 	INSTALL=1
 	while [ true ]; do
 		if [ "$INSTALL" == 1 ]; then
@@ -302,7 +302,7 @@ InstallBaseSystem() {
 
 ## 配置系统 ##
 ConfigureSystem() {
-	WoG "(5/5)=========> Configure the System"
+	BoG "(5/5)=========> Configure the System"
 	G "> Fstab"
 	if [ -e /mnt/etc/fstab ]; then
 		N "\n\033[41;37m[WARN]\033[0;31m  /mnt/etc/fstab exists, make sure there are no errors in fstab file\033[0m"
