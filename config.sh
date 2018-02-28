@@ -15,11 +15,11 @@ Y() {
 }
 # White on Black
 BoW() {
-	echo -e "\033[47;37m$1\033[0m"
+	echo -e "\033[47;30m$1\033[0m"
 }
-# White on Green
-WoG() {
-	echo -e "\033[42;37m$1\033[0m"
+# Black on Green
+BoG() {
+	echo -e "\033[42;30m$1\033[0m"
 }
 # White on Yellow
 WoY() {
