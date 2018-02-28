@@ -4,7 +4,7 @@ date: 2018-02-26 15:39:23
 
 
 ## 一个稍微“比较美观”的ArchLinux安装脚本 ##
-参考[Wiki](https://wiki.archlinux.org)的[Installation guide](https://wiki.archlinux.org/index.php/Installation_guide)
+参考[Wiki](https://wiki.archlinux.org)的[Installation guide](https://wiki.archlinux.org/index.php/Installation_guide)，以及[YangMame](https://github.com/yangmame)的[Arch-Installer](https://github.com/yangmame/Arch-Installer)
 
 
 ---
