@@ -25,10 +25,6 @@ WoG() {
 WoY() {
 	echo -e "\033[43;37m$1\033[0m"
 }
-# White on Red
-WoR() {
-	echo -e "\033[41;37m$1\033[0m"
-}
 
 # Error message
 ERROR() {
@@ -155,12 +151,10 @@ InstallBootctl() {
 			N "  `BoW \"Press [ q ]\"`  to exit\n"
 			N "  `BoW \"Press [ g ]\"`  to use grub"
 			read -n1 -s TMP
-			echo ""
+			N
 			if [ "$TMP" == c ]; then
 				UserCommand
-				if [ "$?" == 0 ]; then
-					continue
-				else
+				if [ "$?" == 1 ]; then
 					ERROR
 				fi
 			elif [ "$TMP" == q ]; then
@@ -287,9 +281,7 @@ InstallBluetooth() {
 		read -n1 -s TMP
 		echo ""
 		if [ "$TMP" == c ]; then
-			if [ "$?" == 0 ]; then
-				continue
-			else
+			if [ "$?" == 1 ]; then
 				ERROR
 			fi
 		elif [ "$TMP" == y ]; then
@@ -423,11 +415,8 @@ main() {
 		echo ""
 		if [ "$TMP" == c ]; then
 			UserCommand
-			if [ "$?" == 0 ]; then
-				continue
-			else
+			if [ "$?" == 1 ]; then
 				ERROR
-				continue
 			fi
 		elif [ "$TMP" == g ]; then
 			InstallGrub
