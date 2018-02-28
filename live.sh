@@ -341,6 +341,6 @@ ConfigureSystem
 
 ## Chroot
 echo -e "  \033[32mChange root into the new system now\033[0m\n"
-wget https://raw.githubusercontent.com/youthug/ArchLinux-Installer/master/config.sh -O /mnt/root/config.sh
+wget https://raw.githubusercontent.com/youthug/Arch-Installer/master/config.sh -O /mnt/root/config.sh
 chmod +x /mnt/root/config.sh
 arch-chroot /mnt /root/config.sh
