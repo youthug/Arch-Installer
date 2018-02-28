@@ -23,21 +23,11 @@ read -n1 -s TMP
 echo -e "\n\n\n\n\n\n\n\n\n\n\033[?25h"
 
 UserCommand() {
-	#if [ "${1:0:2}" == "c:" ]; then
-	#echo -e "\033[33mYour command is:\033[0m ${1#c*:}"
 	STMP=""
 	read -n1 -t 1 TMP0
 	if [ "$TMP0" == c ]; then
-		#while [ true ]; do
-			echo -e "\n\n\033[33mGet into bash now. Input 'exit' to exit bash\033[0m"
-			bash
-			#read -p "> " TMP0
-			#if [ "$TMP0" == "exit" ]; then
-			#	echo ""
-			#	return 0
-			#fi
-			#echo -n `$TMP0`
-		#done
+		echo -e "\n\n\033[33mGet into bash now. Input 'exit' to exit bash\033[0m"
+		bash
 		return 0
 	else
 		STMP=c"$TMP0"
@@ -86,7 +76,7 @@ Partition() {
 			echo -e "\n"
 		done
 	done
-	echo -e "\n\033[42;37m> Partition Done!\033[0m\n\n"
+	echo -e "\n\033[42;37m> Partition    Done!\033[0m\n\n"
 }
 
 ## 挂载 ##
@@ -212,12 +202,12 @@ Mount() {
 			MountPartition "$TMP"
 		fi
 	done
-	echo -e "\n\033[42;37m> Mount Done!\033[0m\n\n"
+	echo -e "\n\033[42;37m> Mount    Done!\033[0m\n\n"
 }
 
 ## 软件源 ##
 EditMirrorList() {
-	echo -e "\n\n\n\033[42;37m(3/5)=========> Mirror List\033[0m\n"
+	echo -e "\n\n\n\033[42;37m(3/5)=========> Mirror\033[0m\n"
 	if [ ! -e /etc/pacman.d/mirrorlist.bak ]; then
 		echo -e "\033[33mBackup /etc/pacman.d/mirrorlist TO /etc/pacman.d/mirrorlist.bak ...\033[0m"
 		cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
@@ -256,7 +246,7 @@ EditMirrorList() {
 		fi
 		echo -e "\n"
 	done
-	echo -e "\n\033[42;37m> Mirror List Done!\033[0m\n\n"
+	echo -e "\n\033[42;37m> Mirror    Done!\033[0m\n\n"
 }
 
 ## 安装基本系统 ##
