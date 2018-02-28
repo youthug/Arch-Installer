@@ -12,11 +12,11 @@ date: 2018-02-26 15:39:23
 
 ### 主要功能 ###
 - 在输入位置双击“C”键进入bash
-  非长文本输入时有效（长文本输入行有'> '标识）
+  <b>非长文本输入时有效</b>（长文本输入行有'> '标识）
 - 分区、mount
-- 根据需要修改/etc/pacman.d/mirrorlist
+- 根据需要修改 `/etc/pacman.d/mirrorlist`
 - 安装桌面环境
-- 支持Intel/NVIDIA/ATI，以及双显卡
+- 支持Intel / NVIDIA / ATI，以及双显卡
 - 配置AUR源
 
 
@@ -26,9 +26,9 @@ date: 2018-02-26 15:39:23
 ### 使用 ###
 联网后
 ```
-wget raw.githubusercontent.com/youthug/ArchLinux-Installer/master/live.sh
-#或者使用短链 wget git.io/vA646 -O live.sh
-chmod +x lice.sh
+wget raw.githubusercontent.com/youthug/Arch-Installer/master/live.sh
+# 或者使用短链 wget git.io/vA646 -O live.sh
+chmod +x live.sh
 ./live.sh
 ```
 
@@ -58,5 +58,5 @@ chmod +x lice.sh
 ---
 
 
-### 欢迎反馈使用体验以及未知BUG。。。 ###
+### 欢迎反馈使用体验以及未知BUG ###
 
