@@ -17,7 +17,6 @@ Y() {
 BoW() {
 	echo -e "\033[47;30m$1\033[0m"
 }
-
 # Black on Green
 BoG() {
 	echo -e "\033[42;30m$1\033[0m"
