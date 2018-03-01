@@ -154,8 +154,8 @@ InstallGrub() {
 InstallBootctl() {
 	G "> Bootctl" n
 	if (mount | grep efivarfs > /dev/null 2>&1); then
-		bootctl --path=esp install
-		bootctl --path=esp update
+		bootctl install
+		bootctl update
 	else
 		while [ true ]; do
 			Y "It seems that your computer's boot mode is not UEFI. Do you want to use grub" n

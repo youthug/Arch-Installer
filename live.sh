@@ -185,7 +185,7 @@ MountPartition() {
 			Y "$1 will be mounted on $PARTITION" n
 			N "  `BoW \"Press [ r ]\"`  to change mount point" n
 			if [ "$1" == "/mnt" -o "$1" == "/mnt/home" ]; then
-				N "  `BoW \"Press [ e ]\"`  to format it to ext4" n 
+				N "  `BoW \"Press [ e ]\"`  to format it to ext4" n
 				N "  `BoW \"Press [ b ]\"`  to format it to btrfs" n
 			elif [ "$1" == "/mnt/boot" ]; then
 				N "  `BoW \"Press [ f ]\"`  to format it to fat32" n
@@ -216,7 +216,13 @@ MountPartition() {
 				fi
 				TMP=y
 			elif [ "$TMP" == m ]; then
-				mount $PARTITION $1
+				if [ "$1" == "/mnt" ]; then
+					mount -o subvol=ROOT $PARTITION $1
+				elif [ "$1" == "/mnt/boot" ]; then
+					mount -o subvol=BOOT $PARTITION $1
+				elif [ "$1" == "/mnt/home" ]; then
+					mount -o subvol=HOME $PARTITION $1
+				fi
 			else
 				ERROR
 				TMP=y
