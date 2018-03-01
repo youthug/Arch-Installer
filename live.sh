@@ -4,29 +4,50 @@
 
 N() {
 	echo -e "$1"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 # Green
 G() {
 	echo -e "\033[32m$1\033[0m"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 # Yellow
 Y() {
 	echo -e "\033[33m$1\033[0m"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 R() {
 	echo -e "\033[31m$1\033[0m"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 # Black on White
 BoW() {
 	echo -e "\033[47;30m$1\033[0m"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 # Black on Green
 BoG() {
 	echo -e "\033[42;30m$1\033[0m"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 # White on Yellow
 WoY() {
 	echo -e "\033[43;37m$1\033[0m"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 
 ERROR() {
@@ -49,10 +70,11 @@ UserCommand() {
 ## 分区 ##
 Partition() {
 	BoG "(1/5)=========> Partition\033[0m"
+	N
 	FLAG=0
-	G "> Adjust partition"
-	Y "Do you want to partition your disk?"
-	N "  `BoW \"Press [ p ]\"`  to partition\n"
+	G "> Adjust partition" n
+	Y "Do you want to partition your disk?" n
+	N "  `BoW \"Press [ p ]\"`  to partition" n
 	N "  `BoW \"Press [ n ]\"`  for no"
 	read -n1 -s TMP
 	N
@@ -69,12 +91,13 @@ Partition() {
 		while [ true ]; do
 			fdisk -l
 			G "> Select disk"
-			Y "Input disk which you want to partition: `BoW \"/dev/sdX[X: a,b,c,...]\"`"
+			N
+			Y "Input the disk which you want to partition: `BoW \"/dev/sdX[X: a,b,c,...]\"`"
 			read -p "> " DISK
 			cfdisk $DISK
 			while [ true ]; do
-				Y "Continue to partition?"
-				N "  `BoW \"Press [ p ]\"`  to partition again\n"
+				Y "Continue to partition?" n
+				N "  `BoW \"Press [ p ]\"`  to partition again" n
 				N "  `BoW \"Press [ n ]\"`  for no"
 				read -n1 -s TMP
 				N
@@ -96,21 +119,20 @@ Partition() {
 			fi
 		done
 	fi
-	G "> Partition done!"
-	N
+	G "> Partition done!" n
 	N
 }
 
 ## 挂载 ##
 MountPartition() {
-	G "> Set mount point"
+	G "> Set mount point" n
 	PARTITION=""
 	if [ "$1" == "/mnt" ]; then
 		TMP=y
 	else
 		while [ true ]; do
-			Y "Create a `WoY \"$1\"` mount point?"
-			N "  `BoW \"Press [ y ]\"`  to Create\n"
+			Y "Create a `WoY \"$1\"`\033[0;33m mount point?" n
+			N "  `BoW \"Press [ y ]\"`  to Create" n
 			N "  `BoW \"Press [ n ]\"`  for no"
 			read -n1 -s TMP
 			N
@@ -137,8 +159,8 @@ MountPartition() {
 		fi
 		## SWAP
 		if [ "$1" == "swap" ]; then
-			Y "Will swapon $PARTITION"
-			N "  `BoW \"Press [ r ]\"`  to change swap partition\n"
+			Y "Will swapon $PARTITION" n
+			N "  `BoW \"Press [ r ]\"`  to change swap partition" n
 			N "  `BoW \"Press [ m ]\"`  to mkswap and swapon"
 			read -n1 -s TMP
 			N
@@ -161,13 +183,13 @@ MountPartition() {
 			fi
 		## NOT SWAP
 		else
-			Y "$1 will be mounted on $PARTITION"
-			N "  `BoW \"Press [ r ]\"`  to change mount point\n"
+			Y "$1 will be mounted on $PARTITION" n
+			N "  `BoW \"Press [ r ]\"`  to change mount point" n
 			if [ "$1" == "/mnt" -o "$1" == "/mnt/home" ]; then
-				N "  `BoW \"Press [ e ]\"`  to format it to ext4\n"
-				N "  `BoW \"Press [ b ]\"`  to format it to btrfs\n"
+				N "  `BoW \"Press [ e ]\"`  to format it to ext4" n 
+				N "  `BoW \"Press [ b ]\"`  to format it to btrfs" n
 			elif [ "$1" == "/mnt/boot" ]; then
-				N "  `BoW \"Press [ f ]\"`  to format it to fat32\n"
+				N "  `BoW \"Press [ f ]\"`  to format it to fat32" n
 			fi
 			N "  `BoW \"Press [ m ]\"`  to mount $1 on $PARTITION and done"
 			read -n1 -s TMP
@@ -188,7 +210,11 @@ MountPartition() {
 				mkfs.btrfs $PARTITION -f
 				TMP=y
 			elif [ "$TMP" == f ] && [ "$1" == "/mnt/boot" ] || ([ "$1" != "/mnt" ] && [ "$1" != "/mnt/boot" ] && [ "$1" != "/mnt/home" ]); then
-				mkfs.fat -F32 $PARTITION
+				Y "  Format EFI partition! You may not be able to boot up other OS which had been installed!\nInput \"yes\" to farmat it if you know what you are doing"
+				read -p "> " TMP
+				if [ "$TMP" == "yes" ]; then
+					mkfs.fat -F32 $PARTITION
+				fi
 				TMP=y
 			elif [ "$TMP" == m ]; then
 				mount $PARTITION $1
@@ -202,7 +228,7 @@ MountPartition() {
 
 ## 挂载分区 ##
 Mount() {
-	BoG "(2/5)=========> Mount"
+	BoG "(2/5)=========> Mount" n
 	MountPartition "/mnt"
 	MountPartition "/mnt/boot"
 	MountPartition "/mnt/home"
@@ -217,26 +243,27 @@ Mount() {
 			MountPartition "$TMP"
 		fi
 	done
-	G "> Mount done!"
-	N
+	G "> Mount done!" n
 	N
 }
 
 ## 软件源 ##
 EditMirrorList() {
-	BoG "(3/5)=========> Mirror"
+	BoG "(3/5)=========> Mirror" n
 	if [ ! -f /etc/pacman.d/mirrorlist.bak ]; then
-		Y "Backup /etc/pacman.d/mirrorlist TO /etc/pacman.d/mirrorlist.bak ..."
+		Y "Backup /etc/pacman.d/mirrorlist TO /etc/pacman.d/mirrorlist.bak"
 		cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
 	fi
+	sed -i "s/^\b/#/g" /etc/pacman.d/mirrorlist
+	Y "All mirrors have been commented out(unselect). Now select the mirrors you want to use." n
 	while [ true ]; do
-		Y "Edit /etc/pacman.d/mirrorlist?"
-		N "  `BoW \"Press [ z ]\"`  to select China's mirrors only\n"
-		N "  `BoW \"Press [ h ]\"`  to use [USTC] [TUNA] [163] mirrors\n"
-		N "  `BoW \"Press [ e ]\"`  to edit mirrorlist by yourself with nano\n"
-		N "  `BoW \"Press [ u ]\"`  to unselect all mirrors\n"
-		N "  `BoW \"Press [ r ]\"`  to restore the mirrors\n"
-		N "  `BoW \"Press [ s ]\"`  to see which mirror is in use\n"
+		Y "Edit /etc/pacman.d/mirrorlist?" n
+		N "  `BoW \"Press [ z ]\"`  to select China's mirrors only" n
+		N "  `BoW \"Press [ h ]\"`  to use [USTC] [TUNA] [163] mirrors" n
+		N "  `BoW \"Press [ e ]\"`  to edit mirrorlist by yourself with nano" n
+		N "  `BoW \"Press [ u ]\"`  to unselect all mirrors" n
+		N "  `BoW \"Press [ r ]\"`  to restore mirrorslist" n
+		N "  `BoW \"Press [ s ]\"`  to see what is being used" n
 		N "  `BoW \"Press [ q ]\"`  to finish editing"
 		read -n1 -s TMP
 		N
@@ -248,7 +275,7 @@ EditMirrorList() {
 		elif [ "$TMP" == z ]; then
 			sed -i '/Score/{/China/!{n;s/^/#/}}' /etc/pacman.d/mirrorlist
 		elif [ "$TMP" == h ]; then
-			echo -e "\n## China\nServer = http://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch\nServer = http://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch\nServer = http://mirrors.163.com/archlinux/\$repo/os/x86_64\n" >> /etc/pacman.d/mirrorlist
+			echo -e "\n\n## China\n## [USTC]\nServer = http://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch\n## [TUNA]\nServer = http://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch\n## [163]\nServer = http://mirrors.163.com/archlinux/\$repo/os/x86_64\n" >> /etc/pacman.d/mirrorlist
 		elif [ "$TMP" == e ]; then
 			nano /etc/pacman.d/mirrorlist
 		elif [ "$TMP" == u ]; then
@@ -263,14 +290,13 @@ EditMirrorList() {
 			ERROR
 		fi
 	done
-	echo -e "> Mirror done"
-	N
+	echo -e "> Mirror done" n
 	N
 }
 
 ## 安装基本系统 ##
 InstallBaseSystem() {
-	BoG "(4/5)=========> Install the Base Packages"
+	BoG "(4/5)=========> Install the Base Packages" n
 	INSTALL=1
 	while [ true ]; do
 		if [ "$INSTALL" == 1 ]; then
@@ -278,7 +304,7 @@ InstallBaseSystem() {
 			pacstrap /mnt base base-devel --force
 		fi
 		Y "Successfully installed?"
-		N "  `BoW \"Press [   n   ]\"`  to reinstall\n"
+		N "  `BoW \"Press [   n   ]\"`  to reinstall" n
 		N "  `BoW \"Press [ Enter ]\"`  to next step"
 		read -n1 -s TMP
 		N
@@ -302,18 +328,15 @@ InstallBaseSystem() {
 
 ## 配置系统 ##
 ConfigureSystem() {
-	BoG "(5/5)=========> Configure the System"
-	G "> Fstab"
-	if [ -e /mnt/etc/fstab ]; then
-		N "\n\033[41;37m[WARN]\033[0;31m  /mnt/etc/fstab exists, make sure there are no errors in fstab file\033[0m"
-		Y "    Double click \"C\" key, get into bash and Use \"cat /mnt/etc/fstab\" to see fstab file and check it"
-		Y "    If you don't know how to fix this, please \033[43;37mPress [ f ]\033[0;33m to remove it and re-genfstab auto\n"
-	else
-		genfstab -U /mnt >> /mnt/etc/fstab
-	fi
+	BoG "(5/5)=========> Configure the System" n
+	G "> GenFstab"
+	cp /mnt/etc/fstab /mnt/etc/fstab.bak
+	genfstab -U /mnt >> /mnt/etc/fstab
 	while [ true ]; do
-		Y "Make sure the fstab file is OK"
-		N "  `BoW \"Press [ e ]\"`  to edit fstab file with nano\n"
+		cat -n /mnt/etc/fstab
+		Y "Make sure the fstab file is OK" n
+		N "  `BoW \"Press [ e ]\"`  to edit fstab file with nano" n
+		N "  `BoW \"Press [ r ]\"`  to restore /etc/fstab and re-genfstab" n
 		N "  `BoW \"Press [ n ]\"`  to next step"
 		read -n1 -s TMP
 		N
@@ -324,22 +347,9 @@ ConfigureSystem() {
 			fi
 		elif [ "$TMP" == e ]; then
 			nano /mnt/etc/fstab
-		elif [ "$TMP" == f ]; then
-			while [ true ]; do
-				N "  \033[41;37m[WARN]\033[0;31m]  Will delete fstab file and re-genfstab! Continue if you know what you're doing\033[0m"
-				N "  \033[43;37mInput [  yes  ]\033[0;33m  to delete fstab file and re-genfstab\033[0m\n"
-				N "  \033[43;37mPress [ Enter ]\033[0;33m  to cancel\033[0m"
-				read -p "> " TMP
-				echo ""
-				if [ "$TMP" == "yes" ]; then
-					rm -f /mnt/etc/fstab
-					genfstab -U /mnt >> /mnt/etc/fstab
-				elif [ "$TMP" == "" ]; then
-					break
-				else
-					ERROR
-				fi
-			done
+		elif [ "$TMP" == r ]; then
+			cat /mnt/etc/fstab.bak > /mnt/etc/fstab
+			genfstab -U /mnt >> /mnt/etc/fstab
 		elif [ "$TMP" == n ]; then
 			break
 		else
@@ -358,11 +368,13 @@ main() {
   \033[43;37m##\033[0m                                                 \033[43;37m##\033[0m
   \033[43;37m#####################\033[0m Get Start \033[43;37m#####################\033[0m\n\n\n"
 
-	echo -ne "\033[32mYou can click 'C' double time to get into normal shell mode in front of every input line.
+	echo -ne "\033[32mYou can click 'C' double time to get into bash in front of every input line.
 
-eg.
-> [Double click 'C']
-\033[33mGet into bash now. Input 'exit' to exit bash\033[0m
+eg.\033[0m
+  ...
+  \033[47;30mPress [ * ]\033[0m  to ...
+\033[33m[Double click 'C' key]
+\033[32m> Get into bash now. Input 'exit' to exit bash\033[0m
 
 # \033[33m(bash now)\033[0m
 
@@ -376,9 +388,10 @@ eg.
 	ConfigureSystem
 
 	## Chroot
-	Y "> Change root into the new system now\n"
+	G "> Downloading config.sh..." n
 	wget https://raw.githubusercontent.com/youthug/Arch-Installer/master/config.sh -O /mnt/root/config.sh
 	chmod +x /mnt/root/config.sh
+	G "> Change root into the new system now" n
 	arch-chroot /mnt /root/config.sh
 }
 
