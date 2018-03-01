@@ -268,6 +268,7 @@ InstallBluetooth() {
 	read -n1 -s TMP
 	N
 	if [ "$TMP" == c ]; then
+		UserCommand
 		if [ "$?" == 0 ]; then
 			InstallBluetooth
 			return
@@ -290,8 +291,9 @@ InstallBluetooth() {
 		N "  `BoW \"Press [ y ]\"`  to install" n
 		N "  `BoW \"Press [ n ]\"`  for no"
 		read -n1 -s TMP
-		echo ""
+		N
 		if [ "$TMP" == c ]; then
+			UserCommand
 			if [ "$?" == 1 ]; then
 				ERROR
 			fi
@@ -312,8 +314,9 @@ InstallApp() {
 	N "  `BoW \"Press [ y ]\"`  for yes" n
 	N "  `BoW \"Press [ n ]\"`  for no"
 	read -n1 -s TMP
-	echo ""
+	N
 	if [ "$TMP" == c ]; then
+		UserCommand
 		if [ "$?" == 0 ]; then
 			InstallApp
 			return

@@ -69,8 +69,7 @@ UserCommand() {
 
 ## 分区 ##
 Partition() {
-	BoG "(1/5)=========> Partition\033[0m"
-	N
+	BoG "(1/5)=========> Partition" n
 	FLAG=0
 	G "> Adjust partition" n
 	Y "Do you want to partition your disk?" n
