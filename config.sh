@@ -4,26 +4,44 @@
 # Normal
 N() {
 	echo -e "$1"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 # Green
 G() {
 	echo -e "\033[32m$1\033[0m"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 # Yellow
 Y() {
 	echo -e "\033[33m$1\033[0m"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 # White on Black
 BoW() {
 	echo -e "\033[47;30m$1\033[0m"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 # Black on Green
 BoG() {
 	echo -e "\033[42;30m$1\033[0m"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 # White on Yellow
 WoY() {
 	echo -e "\033[43;37m$1\033[0m"
+	if [ "$2" == n ]; then
+		echo ""
+	fi
 }
 
 # Error message
@@ -39,7 +57,7 @@ UserCommand() {
 	STMP=""
 	read -n1 -s -t 1 TMP0
 	if [ "$TMP0" == c ]; then
-		echo -e "\n\n\033[33mGet into bash now. Input 'exit' to exit bash\033[0m"
+		G "> Get into bash now. Input 'exit' to exit bash"
 		bash
 		return 0
 	else
@@ -48,12 +66,9 @@ UserCommand() {
 	fi
 }
 
-
-Y "> Change root into the new system!"
-
 ## 时区设置
 SetLocale() {
-	G "> Locale"
+	G "> Set Locale" n
 	Y "Choose your timezone"
 	select AREA in `ls /usr/share/zoneinfo`; do
 		echo $AREA
@@ -69,21 +84,17 @@ SetLocale() {
 			select ZONE in `ls /usr/share/zoneinfo/$AREA`; do
 				if [ "$ZONE" == "" ]; then
 					ERROR
-					Y "Get into trouble? If you don't find a right zone:"
-					N "  `BoW \"Input [ back  ]\"` to uplevel"
-					N "  `BoW \"Press [ Enter ]\"` to choose again"
+					Y "Get into trouble? If you don't find a right zone there:" n
+					N "  `BoW \"Input [ back  ]\"` to uplevel" n
+					N "  `BoW \"Press [ Enter ]\"` to choose again" n
 					read -p "> " TMP
 					if [ "$TMP" == "back" ]; then
 						SetLocale
 						return
 					fi
-				elif [ -e /usr/share/zoneinfo/$AREA/$ZONE ]; then
+				elif [ -f /usr/share/zoneinfo/$AREA/$ZONE ]; then
 					G "> Set up locale to $AREA/$ZONE"
 					ln -sf /usr/share/zoneinfo/$AREA/$ZONE /etc/localtime
-					return
-				elif [ "$ZONE" == "$AREA" ]; then
-					G "> Set up locale to $AREA"
-					ln -sf /usr/share/zoneinfo/$AREA /etc/localtime
 					return
 				else
 					ERROR
@@ -101,7 +112,7 @@ SetLocale() {
 	hwclock --systohc --utc
 	Y "Chose your language:"
 	select LANG in "en_US.UTF-8" "zh_CN.UTF-8"; do
-		if [ "$LANG" "" ]; then
+		if [ "$LANG" == "" ]; then
 			ERROR
 		else
 			echo "$LANG UTF-8" > /etc/locale.gen
@@ -114,17 +125,17 @@ SetLocale() {
 
 ## 主机名
 SetHost() {
-	G "> Hostname"
-	Y "Input your hostname:"
+	G "> Set Hostname" n
+	Y "Input your hostname"
 	read -p "> " NAME
 	echo $NAME > /etc/hostname
-	G "> Change your password"
+	G "> Change password of root"
 	passwd
 }
 
 ## GRUB
 InstallGrub() {
-	G "> GRUB"
+	G "> GRUB" n
 	if (mount | grep efivarfs > /dev/null 2>&1); then
 		pacman -S --noconfirm grub efibootmgr -y
 		grub-install --target=`uname -m`-efi --efi-directory=/boot --bootloader-id=Arch-Grub
@@ -141,14 +152,14 @@ InstallGrub() {
 
 ## Bootctl
 InstallBootctl() {
-	G "> Bootctl"
+	G "> Bootctl" n
 	if (mount | grep efivarfs > /dev/null 2>&1); then
 		bootctl --path=esp install
 		bootctl --path=esp update
 	else
 		while [ true ]; do
-			Y "It seems that your computer's boot mode is not UEFI. Do you want to use grub"
-			N "  `BoW \"Press [ q ]\"`  to exit\n"
+			Y "It seems that your computer's boot mode is not UEFI. Do you want to use grub" n
+			N "  `BoW \"Press [ q ]\"`  to exit" n
 			N "  `BoW \"Press [ g ]\"`  to use grub"
 			read -n1 -s TMP
 			N
@@ -171,11 +182,11 @@ InstallBootctl() {
 
 ## 添加用户
 AddUser() {
-	G "> Add User"
+	G "> Add User" n
 	Y "Input your username(NO UPPERCASE)"
 	read -p "> " USER
 	useradd -m -g wheel $USER
-	Y "Change your password"
+	Y "Change password of $USER"
 	passwd $USER
 	pacman -S --noconfirm sudo
 	sed -i 's/\# \%wheel ALL=(ALL) ALL/\%wheel ALL=(ALL) ALL/g' /etc/sudoers
@@ -184,8 +195,8 @@ AddUser() {
 
 ## 显卡驱动
 InstallGraphic() {
-	G "> Graphic Card"
-	Y "What is your graphic card?"
+	G "> Graphics Card" n
+	Y "Select type of your graphics card"
 	select CARD in "Intel" "Nvidia" "Intel and Nvidia" "AMD"; do
 		case $CARD in
 		"Intel")
@@ -193,10 +204,10 @@ InstallGraphic() {
 			break
 			;;
 		"Nvidia")
-			Y "Select version of your Nvidia-card"
-			select NVIDIA in "GeForce-8 and newer" "GeForce-6/7" "Older"; do
+			Y "Select version of your Nvidia graphics card"
+			select NVIDIA in "GeForce-8 or newer" "GeForce-6/7" "Older"; do
 				case $NVIDIA in
-				"GeForce-8 and newer")
+				"GeForce-8 or newer")
 					pacman -S --noconfirm nvidia
 					break
 					;;
@@ -217,9 +228,9 @@ InstallGraphic() {
 			;;
 		"Intel and Nvidia")
 			Y "Select version of your Nvidia-card"
-			select NVIDIA in "GeForce-8 and newer" "GeForce-6/7" "Older"; do
+			select NVIDIA in "GeForce-8 or newer" "GeForce-6/7" "Older"; do
 				case $NVIDIA in
-				"GeForce-8 and newer")
+				"GeForce-8 or newer")
 					pacman -S --noconfirm nvidia
 					break
 					;;
@@ -250,12 +261,12 @@ InstallGraphic() {
 
 ## 蓝牙
 InstallBluetooth() {
-	G "> Bluetooth"
-	Y "Do you have a bluetooth?"
-	N "  `BoW \"Press [ y ]\"`  to install bluez\n"
+	G "> Bluetooth" n
+	Y "Do you have a bluetooth?" n
+	N "  `BoW \"Press [ y ]\"`  to install bluez" n
 	N "  `BoW \"Press [ n ]\"`  for no"
 	read -n1 -s TMP
-	echo ""
+	N
 	if [ "$TMP" == c ]; then
 		if [ "$?" == 0 ]; then
 			InstallBluetooth
@@ -275,8 +286,8 @@ InstallBluetooth() {
 	pacman -S --noconfirm bluez
 	systemctl enable bluetooth
 	while [ true ]; do
-		Y "Install blueman?"
-		N "  `BoW \"Press [ y ]\"`  to install\n"
+		Y "Install blueman?" n
+		N "  `BoW \"Press [ y ]\"`  to install" n
 		N "  `BoW \"Press [ n ]\"`  for no"
 		read -n1 -s TMP
 		echo ""
@@ -296,9 +307,9 @@ InstallBluetooth() {
 
 ## 安装应用
 InstallApp() {
-	G "> Application"
-	Y "Do you want to use AUR(China)?"
-	N "  `BoW \"Press [ y ]\"`  for yes\n"
+	G "> Application" n
+	Y "Do you want to use AUR(yaourt)?" n
+	N "  `BoW \"Press [ y ]\"`  for yes" n
 	N "  `BoW \"Press [ n ]\"`  for no"
 	read -n1 -s TMP
 	echo ""
@@ -310,6 +321,7 @@ InstallApp() {
 			ERROR
 		fi
 	elif [ "$TMP" == y ]; then
+		Y "Which one you want to use?"
 		select AUR in "USTC" "TUNA" "163"; do
 			case $AUR in
 			"USTC")
@@ -342,57 +354,57 @@ InstallApp() {
 
 ## 桌面环境
 InstallDesktop() {
-	G "> Desktop"
+	G "> Desktop" n
 	Y "Choose a Desktop Environment you want to use"
-	select DESKTOP in "Gnome" "KDE" "Xfce" "Cinnamon" "Mate" "Deepin" "Budgie" "Lxde" "Lxqt" "I do not want to install them now"; do
+	select DESKTOP in "Gnome" "KDE" "Xfce" "Cinnamon" "Mate" "Deepin" "Budgie" "Lxde" "Lxqt" "I don't want to install them now"; do
 		case $DESKTOP in
 		"Gnome")
-			pacman -S gnome gnome-terminal
+			pacman -S --noconfirm gnome gnome-terminal
 			systemctl enable gdm
 			break
 			;;
 		"KDE")
-			pacman -S plasma kdebase kdeutils kdegraphics kde-l10n-zh_cn sddm
+			pacman -S --noconfirm plasma kdebase kdeutils kdegraphics kde-l10n-zh_cn sddm
 			systemctl enable sddm
 			break
 			;;
 		"Xfce")
-			pacman -S xfce4 xfce4-goodies xfce4-terminal lightdm lightdm-gtk-greeter
+			pacman -S --noconfirm xfce4 xfce4-goodies xfce4-terminal lightdm lightdm-gtk-greeter
 			systemctl enable lightdm
 			break
 			;;
 		"Cinnamon")
-			pacman -S cinnamon gnome-terminal lightdm lightdm-gtk-greeter
+			pacman -S --noconfirm cinnamon gnome-terminal lightdm lightdm-gtk-greeter
 			systemctl enable lightdm
 			break
 			;;
 		"Mate")
-			pacman -S mate mate-extra mate-terminal lightdm lightdm-gtk-greeter
+			pacman -S --noconfirm mate mate-extra mate-terminal lightdm lightdm-gtk-greeter
 			systemctl enable lightdm
 			break
 			;;
 		"Deepin")
-			pacman -S deepin deepin-extra deepin-terminal lightdm lightdm-gtk-greeter
+			pacman -S --noconfirm deepin deepin-extra deepin-terminal lightdm lightdm-gtk-greeter
 			systemctl enable lightdm
 			sed -i '108s/#greeter-session=example-gtk-gnome/greeter-session=lightdm-deepin-greeter/' /etc/lightdm/lightdm.conf
 			break
 			;;
 		"Budgie")
-			pacman -S budgie-desktop gnome-terminal lightdm lightdm-gtk-greeter
+			pacman -S --noconfirm budgie-desktop gnome-terminal lightdm lightdm-gtk-greeter
 			systemctl enable lightdm
 			break
 			;;
 		"Lxde")
-			pacman -S lxde lightdm lightdm-gtk-greeter
+			pacman -S --noconfirm lxde lightdm lightdm-gtk-greeter
 			systemctl enable lightdm
 			break
 			;;
 		"Lxqt")
-			pacman -S lxqt lightdm lightdm-gtk-greeter
+			pacman -S --noconfirm lxqt lightdm lightdm-gtk-greeter
 			systemctl enable lightdm
 			break
 			;;
-		"I do not want to install them now")
+		"I don't want to install them now")
 			break
 			;;
 		*)
@@ -407,12 +419,12 @@ main() {
 	SetLocale
 	SetHost
 	while [ true ]; do
-		G "> Boot Manager"
-		Y "Use GRUB or Bootctl"
-		N "  `BoW \"Press [ g ]\"`  to use GRUB\n"
+		G "> Boot Manager" n
+		Y "Use GRUB or Bootctl" n
+		N "  `BoW \"Press [ g ]\"`  to use GRUB" n
 		N "  `BoW \"Press [ b ]\"`  to use Bootctl"
 		read -n1 -s TMP
-		echo ""
+		N
 		if [ "$TMP" == c ]; then
 			UserCommand
 			if [ "$?" == 1 ]; then
@@ -433,7 +445,8 @@ main() {
 	InstallBluetooth
 	InstallApp
 	InstallDesktop
-	G "\n\nALL have done! Try it now."
+	N "\n"
+	G "ALL have done! Try it now." n
 }
 
 main
