@@ -183,6 +183,9 @@ MountPartition() {
 		## NOT SWAP
 		else
 			Y "$1 will be mounted on $PARTITION" n
+			if [ "$1" == "/mnt" ]; then
+				ROOT=$PARTITION
+			fi
 			N "  `BoW \"Press [ r ]\"`  to change mount point" n
 			if [ "$1" == "/mnt" -o "$1" == "/mnt/home" ]; then
 				N "  `BoW \"Press [ e ]\"`  to format it to ext4" n
@@ -216,12 +219,7 @@ MountPartition() {
 				fi
 				TMP=y
 			elif [ "$TMP" == m ]; then
-				if [ "$1" == "/mnt" ]; then
-					mount -o subvol=ROOT $PARTITION $1
-				elif [ "$1" == "/mnt/boot" ]; then
-					mount -o subvol=BOOT $PARTITION $1
-				elif [ "$1" == "/mnt/home" ]; then
-					mount -o subvol=HOME $PARTITION $1
+					mount $PARTITION $1
 				fi
 			else
 				ERROR
@@ -256,11 +254,11 @@ Mount() {
 EditMirrorList() {
 	BoG "(3/5)=========> Mirror" n
 	if [ ! -f /etc/pacman.d/mirrorlist.bak ]; then
-		Y "Backup /etc/pacman.d/mirrorlist TO /etc/pacman.d/mirrorlist.bak"
+		Y "Backup /etc/pacman.d/mirrorlist TO /etc/pacman.d/mirrorlist.bak" n
 		cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
 	fi
 	sed -i "s/^\b/#/g" /etc/pacman.d/mirrorlist
-	Y "All mirrors have been commented out(unselect). Now select the mirrors you want to use." n
+	Y "All mirrors have been commented out(unselect). Now choose the mirrors you want to use." n
 	while [ true ]; do
 		Y "Edit /etc/pacman.d/mirrorlist?" n
 		N "  `BoW \"Press [ z ]\"`  to select China's mirrors only" n

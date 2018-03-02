@@ -69,6 +69,7 @@ UserCommand() {
 ## 时区设置
 SetLocale() {
 	G "> Set Locale" n
+	FLAG=0
 	Y "Choose your timezone"
 	select AREA in `ls /usr/share/zoneinfo`; do
 		echo $AREA
@@ -95,7 +96,8 @@ SetLocale() {
 				elif [ -f /usr/share/zoneinfo/$AREA/$ZONE ]; then
 					G "> Set up locale to $AREA/$ZONE"
 					ln -sf /usr/share/zoneinfo/$AREA/$ZONE /etc/localtime
-					return
+					FLAG=1
+					break
 				else
 					ERROR
 				fi
@@ -107,6 +109,9 @@ SetLocale() {
 			break
 		else
 			ERROR
+		fi
+		if [ "$FLAG" == 1 ]; then
+			braek
 		fi
 	done
 	hwclock --systohc --utc
@@ -156,6 +161,7 @@ InstallBootctl() {
 	if (mount | grep efivarfs > /dev/null 2>&1); then
 		bootctl install
 		bootctl update
+		echo -e "title\tArch Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=`blkid -s PARTUUID -o value $ROOT` rw"
 	else
 		while [ true ]; do
 			Y "It seems that your computer's boot mode is not UEFI. Do you want to use grub" n
