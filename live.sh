@@ -183,9 +183,6 @@ MountPartition() {
 		## NOT SWAP
 		else
 			Y "$1 will be mounted on $PARTITION" n
-			if [ "$1" == "/mnt" ]; then
-				ROOT=$PARTITION
-			fi
 			N "  `BoW \"Press [ r ]\"`  to change mount point" n
 			if [ "$1" == "/mnt" -o "$1" == "/mnt/home" ]; then
 				N "  `BoW \"Press [ e ]\"`  to format it to ext4" n

@@ -161,10 +161,20 @@ InstallBootctl() {
 	if (mount | grep efivarfs > /dev/null 2>&1); then
 		bootctl install
 		bootctl update
-		echo -e "title\tArch Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=`blkid -s PARTUUID -o value $ROOT` rw"
+		sed -i "s/^\b/#/g" /boot/loader/loader.conf
+		echo "default arch" >> /boot/loader/loader.conf
+		Y "Which is your ROOT(/) partition?(/dev/sdxY)"
+		read -p "> " TMP
+		echo -e "title\tArch Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=`blkid -s PARTUUID -o value $TMP` rw" > /boot/loader/entries/arch.conf
+		Y "FILE /boot/loader/loader.conf :"
+		cat /boot/loader/loader.conf
+		Y "FILE /boot/loader/entries/arch.conf :"
+		cat /boot/loader/entries/arch.conf
+		N
+		Y "You'd better check /boot/loader/loader.conf and /boot/loader/entries/arch.conf by yourself." n
 	else
 		while [ true ]; do
-			Y "It seems that your computer's boot mode is not UEFI. Do you want to use grub" n
+			Y "It seems that your computer's boot mode is not UEFI. We can't install bootctl. Do you want to use grub?" n
 			N "  `BoW \"Press [ q ]\"`  to exit" n
 			N "  `BoW \"Press [ g ]\"`  to use grub"
 			read -n1 -s TMP
@@ -284,33 +294,33 @@ InstallBluetooth() {
 	elif [ "$TMP" == n ]; then
 		return
 	elif [ "$TMP" == y ]; then
-		echo -n ""
+		pacman -S --noconfirm bluez
+		systemctl enable bluetooth
+		while [ true ]; do
+			Y "Install blueman?" n
+			N "  `BoW \"Press [ y ]\"`  to install" n
+			N "  `BoW \"Press [ n ]\"`  for no"
+			read -n1 -s TMP
+			N
+			if [ "$TMP" == c ]; then
+				UserCommand
+				if [ "$?" == 1 ]; then
+					ERROR
+				fi
+			elif [ "$TMP" == y ]; then
+				pacman -S --noconfirm blueman
+				break
+			elif [ "$TMP" == n ]; then
+				break
+			else
+				ERROR
+			fi
+		done
 	else
 		ERROR
 		InstallBluetooth
 		return
 	fi
-	pacman -S --noconfirm bluez
-	systemctl enable bluetooth
-	while [ true ]; do
-		Y "Install blueman?" n
-		N "  `BoW \"Press [ y ]\"`  to install" n
-		N "  `BoW \"Press [ n ]\"`  for no"
-		read -n1 -s TMP
-		N
-		if [ "$TMP" == c ]; then
-			UserCommand
-			if [ "$?" == 1 ]; then
-				ERROR
-			fi
-		elif [ "$TMP" == y ]; then
-			pacman -S --noconfirm blueman
-		elif [ "$TMP" == n ]; then
-			break
-		else
-			ERROR
-		fi
-	done
 }
 
 ## 安装应用
@@ -357,8 +367,97 @@ InstallApp() {
 	else
 		ERROR
 	fi
-	pacman -S --noconfirm networkmanager xorg-server firefox wqy-zenhei
+	pacman -S --noconfirm networkmanager xorg-server wqy-zenhei
 	systemctl enable NetworkManager
+	FLAG=0
+	while [ true ]; do
+		Y "Install Firefox?" n
+		N "  `BoW \"Press [ y ]\"`  for yes" n
+		N "  `BoW \"Press [ n ]\"`  for no"
+		read -n1 -s TMP
+		N
+		if [ "$TMP" == c ]; then
+			UserCommand
+			if  [ "$?" == 1 ]; then
+				ERROR
+			fi
+		elif [ "$TMP" == y ]; then
+			pacman -S firefox
+			while [ true ]; do
+				Y "Install firefox-i18n-zh-cn(Chinese (Simplified) language pack for Firefox)?" n
+				N "  `BoW \"Press [ y ]\"`  for yes" n
+				N "  `BoW \"Press [ n ]\"`  for no"
+				read -n1 -s TMP
+				N
+				if [ "$TMP" == c ]; then
+					UserCommand
+					if  [ "$?" == 1 ]; then
+						ERROR
+					fi
+				elif [ "$TMP" == y ]; then
+					pacman -S firefox-i18n-zh-cn
+					FLAG=1
+					break
+				elif [ "$TMP" == n ]; then
+					break
+				else
+					ERROR
+				fi
+			done
+		elif [ "$TMP" == n ]; then
+			break
+		else
+			ERROR
+		fi
+		if [ "$FLAG" == 1 ]; then
+			FLAG=0
+			break
+		fi
+	done
+	while [ true ]; do
+		Y "Install Fcitx?" n
+		N "  `BoW \"Press [ y ]\"`  for yes" n
+		N "  `BoW \"Press [ n ]\"`  for no"
+		read -n1 -s TMP
+		N
+		if [ "$TMP" == c ]; then
+			UserCommand
+			if  [ "$?" == 1 ]; then
+				ERROR
+			fi
+		elif [ "$TMP" == y ]; then
+			pacman -S fcitx fcitx-configtool
+			while [ true ]; do
+				Y "Install Sogou Pinyin?" n
+				N "  `BoW \"Press [ y ]\"`  for yes" n
+				N "  `BoW \"Press [ n ]\"`  for no"
+				read -n1 -s TMP
+				N
+				if [ "$TMP" == c ]; then
+					UserCommand
+					if  [ "$?" == 1 ]; then
+						ERROR
+					fi
+				elif [ "$TMP" == y ]; then
+					pacman -S fcitx-sogoupinyin
+					FLAG=1
+					break
+				elif [ "$TMP" == n ]; then
+					break
+				else
+					ERROR
+				fi
+			done
+		elif [ "$TMP" == n ]; then
+			break
+		else
+			ERROR
+		fi
+		if [ "$FLAG" == 1 ]; then
+			FLAG=0
+			break
+		fi
+	done
 }
 
 ## 桌面环境
