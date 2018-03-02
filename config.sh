@@ -120,6 +120,10 @@ SetLocale() {
 		if [ "$LANG" == "" ]; then
 			ERROR
 		else
+			if [ "$LANG" == "zh_CN.UTF-8" ]; then
+				Y "To ensure the font display without errors, locale-gen will be done at the end." n
+				break
+			fi
 			echo "$LANG UTF-8" > /etc/locale.gen
 			locale-gen
 			echo LANG=$LANG > /etc/locale.conf
@@ -405,6 +409,7 @@ InstallApp() {
 					ERROR
 				fi
 			done
+			break
 		elif [ "$TMP" == n ]; then
 			break
 		else
@@ -419,14 +424,14 @@ InstallApp() {
 		Y "Install Fcitx?" n
 		N "  `BoW \"Press [ y ]\"`  for yes" n
 		N "  `BoW \"Press [ n ]\"`  for no"
-		read -n1 -s TMP
+		read -n1 -s FCITX
 		N
-		if [ "$TMP" == c ]; then
+		if [ "$FCITX" == c ]; then
 			UserCommand
 			if  [ "$?" == 1 ]; then
 				ERROR
 			fi
-		elif [ "$TMP" == y ]; then
+		elif [ "$FCITX" == y ]; then
 			pacman -S --noconfirm fcitx fcitx-configtool
 			while [ true ]; do
 				Y "Install Sogou Pinyin?" n
@@ -449,7 +454,8 @@ InstallApp() {
 					ERROR
 				fi
 			done
-		elif [ "$TMP" == n ]; then
+			break
+		elif [ "$FCITX" == n ]; then
 			break
 		else
 			ERROR
@@ -521,6 +527,9 @@ InstallDesktop() {
 			;;
 		esac
 	done
+	if [ "$FCITX" == y ]; then
+		echo -e "export GTK_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx" >> ~/.xprfile
+	fi
 }
 
 ## main
@@ -554,6 +563,12 @@ main() {
 	InstallBluetooth
 	InstallApp
 	InstallDesktop
+	N
+	if [ "$LANG" == "zh_CN.UTF-8" ]; then
+		echo "$LANG UTF-8" > /etc/locale.gen
+		locale-gen
+		echo LANG=$LANG > /etc/locale.conf
+	fi
 	N "\n"
 	G "ALL have done! Try it now." n
 	bash
