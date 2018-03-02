@@ -162,10 +162,11 @@ InstallBootctl() {
 		bootctl install
 		bootctl update
 		sed -i "s/^\b/#/g" /boot/loader/loader.conf
-		echo "default arch" >> /boot/loader/loader.conf
+		echo -e "timeout 3\ndefault arch" >> /boot/loader/loader.conf
+		fdisk -l
 		Y "Which is your ROOT(/) partition?(/dev/sdxY)"
 		read -p "> " TMP
-		echo -e "title\tArch Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=`blkid -s PARTUUID -o value $TMP` rw" > /boot/loader/entries/arch.conf
+		echo -e "title Arch Linux\nlinux /vmlinuz-linux\ninitrd /initramfs-linux.img\noptions root=PARTUUID=`blkid -s PARTUUID -o value $TMP` rw" > /boot/loader/entries/arch.conf
 		Y "FILE /boot/loader/loader.conf :"
 		cat /boot/loader/loader.conf
 		Y "FILE /boot/loader/entries/arch.conf :"
@@ -382,7 +383,7 @@ InstallApp() {
 				ERROR
 			fi
 		elif [ "$TMP" == y ]; then
-			pacman -S firefox
+			pacman -S --noconfirm firefox
 			while [ true ]; do
 				Y "Install firefox-i18n-zh-cn(Chinese (Simplified) language pack for Firefox)?" n
 				N "  `BoW \"Press [ y ]\"`  for yes" n
@@ -395,7 +396,7 @@ InstallApp() {
 						ERROR
 					fi
 				elif [ "$TMP" == y ]; then
-					pacman -S firefox-i18n-zh-cn
+					pacman -S --noconfirm firefox-i18n-zh-cn
 					FLAG=1
 					break
 				elif [ "$TMP" == n ]; then
@@ -426,7 +427,7 @@ InstallApp() {
 				ERROR
 			fi
 		elif [ "$TMP" == y ]; then
-			pacman -S fcitx fcitx-configtool
+			pacman -S --noconfirm fcitx fcitx-configtool
 			while [ true ]; do
 				Y "Install Sogou Pinyin?" n
 				N "  `BoW \"Press [ y ]\"`  for yes" n
@@ -439,7 +440,7 @@ InstallApp() {
 						ERROR
 					fi
 				elif [ "$TMP" == y ]; then
-					pacman -S fcitx-sogoupinyin
+					pacman -S --noconfirm fcitx-sogoupinyin
 					FLAG=1
 					break
 				elif [ "$TMP" == n ]; then
@@ -555,6 +556,7 @@ main() {
 	InstallDesktop
 	N "\n"
 	G "ALL have done! Try it now." n
+	bash
 }
 
 main
