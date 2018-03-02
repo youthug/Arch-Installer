@@ -216,8 +216,8 @@ MountPartition() {
 				fi
 				TMP=y
 			elif [ "$TMP" == m ]; then
-					mount $PARTITION $1
-				fi
+				mount $PARTITION $1
+				break
 			else
 				ERROR
 				TMP=y
