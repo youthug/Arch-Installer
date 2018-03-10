@@ -334,9 +334,9 @@ InstallApp() {
 	Y "Do you want to use AUR(yaourt)?" n
 	N "  `BoW \"Press [ y ]\"`  for yes" n
 	N "  `BoW \"Press [ n ]\"`  for no"
-	read -n1 -s TMP
+	read -n1 -s AUR
 	N
-	if [ "$TMP" == c ]; then
+	if [ "$AUR" == c ]; then
 		UserCommand
 		if [ "$?" == 0 ]; then
 			InstallApp
@@ -344,10 +344,10 @@ InstallApp() {
 		else
 			ERROR
 		fi
-	elif [ "$TMP" == y ]; then
+	elif [ "$AUR" == y ]; then
 		Y "Which one you want to use?"
-		select AUR in "USTC" "TUNA" "163"; do
-			case $AUR in
+		select AURMIRROR in "USTC" "TUNA" "163"; do
+			case $AURMIRROR in
 			"USTC")
 				echo -e "[archlinuxcn]\nServer = https://mirrors.ustc.edu.cn/archlinuxcn/\$arch" >> /etc/pacman.conf
 				break
@@ -367,7 +367,7 @@ InstallApp() {
 		done
 		pacman -Sy --noconfirm archlinuxcn-keyring
 		pacman -S --noconfirm yaourt
-	elif [ "$TMP" == n ]; then
+	elif [ "$AUR" == n ]; then
 		echo -n ""
 	else
 		ERROR
@@ -375,9 +375,32 @@ InstallApp() {
 	pacman -S --noconfirm networkmanager xorg-server wqy-zenhei
 	systemctl enable NetworkManager
 	FLAG=0
+	# GEdit
 	while [ true ]; do
-		Y "Install Firefox?" n
+		Y "Install gedit(GNOME Text Editor)?" n
 		N "  `BoW \"Press [ y ]\"`  for yes" n
+		N "  `BoW \"Press [ n ]\"`  for no"
+		read -n1 -s TMP
+		N
+		if [ "$TMP" == c ]; then
+			UserCommand
+			if  [ "$?" == 1 ]; then
+				ERROR
+			fi
+		elif [ "$TMP" == y ]; then
+			pacman -S --noconfirm gedit
+			break
+		elif [ "$TMP" == n ]; then
+			break
+		else
+			ERROR
+		fi
+	done
+	while [ true ]; do
+		Y "Install Browser" n
+		N "  `BoW \"Press [ f ]\"`  to install Firefox" n
+		if [ "$AUR" == y ]; then
+			N "  `BoW \"Press [ g ]\"`  to install google-chrome - [archlinuxcn]" n
 		N "  `BoW \"Press [ n ]\"`  for no"
 		read -n1 -s TMP
 		N
@@ -410,6 +433,9 @@ InstallApp() {
 				fi
 			done
 			break
+		elif [ "$TMP" == g ] && [ "$AUR" == y ]; then
+			pacman -S --noconfirm google-chrome
+			break
 		elif [ "$TMP" == n ]; then
 			break
 		else
@@ -420,6 +446,7 @@ InstallApp() {
 			break
 		fi
 	done
+	# Fcitx
 	while [ true ]; do
 		Y "Install Fcitx?" n
 		N "  `BoW \"Press [ y ]\"`  for yes" n
@@ -433,7 +460,7 @@ InstallApp() {
 			fi
 		elif [ "$FCITX" == y ]; then
 			pacman -S --noconfirm fcitx fcitx-configtool
-			while [ true ]; do
+			while [ "$AUR" == y ]; do
 				Y "Install Sogou Pinyin?" n
 				N "  `BoW \"Press [ y ]\"`  for yes" n
 				N "  `BoW \"Press [ n ]\"`  for no"
@@ -463,6 +490,27 @@ InstallApp() {
 		if [ "$FLAG" == 1 ]; then
 			FLAG=0
 			break
+		fi
+	done
+	# Netease-Cloud-Music
+	while [ true ]; do
+		Y "Install netease-cloud-music?" n
+		N "  `BoW \"Press [ y ]\"`  for yes" n
+		N "  `BoW \"Press [ n ]\"`  for no"
+		read -n1 -s TMP
+		N
+		if [ "$TMP" == c ]; then
+			UserCommand
+			if  [ "$?" == 1 ]; then
+				ERROR
+			fi
+		elif [ "$TMP" == y ]; then
+			pacman -S --noconfirm netease-cloud-music
+			break
+		elif [ "$TMP" == n ]; then
+			break
+		else
+			ERROR
 		fi
 	done
 }
