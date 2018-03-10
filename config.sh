@@ -331,7 +331,7 @@ InstallBluetooth() {
 ## 安装应用
 InstallApp() {
 	G "> Application" n
-	Y "Do you want to use AUR(yaourt)?" n
+	Y "Do you want to use AUR-[yaourt]?" n
 	N "  `BoW \"Press [ y ]\"`  for yes" n
 	N "  `BoW \"Press [ n ]\"`  for no"
 	read -n1 -s AUR
@@ -346,7 +346,7 @@ InstallApp() {
 		fi
 	elif [ "$AUR" == y ]; then
 		Y "Which one you want to use?"
-		select AURMIRROR in "USTC" "TUNA" "163"; do
+		select AURMIRROR in "USTC  [mirrors.ustc.edu.cn/]" "TUNA  [mirrors.tuna.tsinghua.edu.cn]" "163   [mirrors.163.com/]"; do
 			case $AURMIRROR in
 			"USTC")
 				echo -e "[archlinuxcn]\nServer = https://mirrors.ustc.edu.cn/archlinuxcn/\$arch" >> /etc/pacman.conf
@@ -377,7 +377,7 @@ InstallApp() {
 	FLAG=0
 	# GEdit
 	while [ true ]; do
-		Y "Install gedit(GNOME Text Editor)?" n
+		Y "Install gedit [GNOME Text Editor]?" n
 		N "  `BoW \"Press [ y ]\"`  for yes" n
 		N "  `BoW \"Press [ n ]\"`  for no"
 		read -n1 -s TMP
@@ -400,7 +400,9 @@ InstallApp() {
 		Y "Install Browser" n
 		N "  `BoW \"Press [ f ]\"`  to install Firefox" n
 		if [ "$AUR" == y ]; then
-			N "  `BoW \"Press [ g ]\"`  to install google-chrome - [archlinuxcn]" n
+			N "  `BoW \"Press [ g ]\"`  to install Chrome-[from archlinuxcn]" n
+			N "  `BoW \"Press [ b ]\"`  to install both of Firefox and Chrome-[from archlinuxcn]" n
+        fi
 		N "  `BoW \"Press [ n ]\"`  for no"
 		read -n1 -s TMP
 		N
@@ -409,33 +411,15 @@ InstallApp() {
 			if  [ "$?" == 1 ]; then
 				ERROR
 			fi
-		elif [ "$TMP" == y ]; then
+		elif [ "$TMP" == f ]; then
 			pacman -S --noconfirm firefox
-			while [ true ]; do
-				Y "Install firefox-i18n-zh-cn(Chinese (Simplified) language pack for Firefox)?" n
-				N "  `BoW \"Press [ y ]\"`  for yes" n
-				N "  `BoW \"Press [ n ]\"`  for no"
-				read -n1 -s TMP
-				N
-				if [ "$TMP" == c ]; then
-					UserCommand
-					if  [ "$?" == 1 ]; then
-						ERROR
-					fi
-				elif [ "$TMP" == y ]; then
-					pacman -S --noconfirm firefox-i18n-zh-cn
-					FLAG=1
-					break
-				elif [ "$TMP" == n ]; then
-					break
-				else
-					ERROR
-				fi
-			done
 			break
 		elif [ "$TMP" == g ] && [ "$AUR" == y ]; then
 			pacman -S --noconfirm google-chrome
 			break
+        elif [ "$TMP" == b ] && [ "$AUR" == y ]; then
+            pacman -S --noconfirm firefox google-chrome
+            break
 		elif [ "$TMP" == n ]; then
 			break
 		else
@@ -446,9 +430,29 @@ InstallApp() {
 			break
 		fi
 	done
+	while [ "$TMP" == f ] || [ "$TMP" == b ]; do
+        Y "Install firefox-i18n-zh-cn [Chinese (Simplified) language pack for Firefox]?" n
+		N "  `BoW \"Press [ y ]\"`  for yes" n
+		N "  `BoW \"Press [ n ]\"`  for no"
+		read -n1 -s TMP
+		N
+		if [ "$TMP" == c ]; then
+			UserCommand
+			if  [ "$?" == 1 ]; then
+				ERROR
+			fi
+		elif [ "$TMP" == y ]; then
+			pacman -S --noconfirm firefox-i18n-zh-cn
+			break
+		elif [ "$TMP" == n ]; then
+			break
+		else
+			ERROR
+		fi
+	done
 	# Fcitx
 	while [ true ]; do
-		Y "Install Fcitx?" n
+		Y "Install Fcitx [a lightweight input method framework]?" n
 		N "  `BoW \"Press [ y ]\"`  for yes" n
 		N "  `BoW \"Press [ n ]\"`  for no"
 		read -n1 -s FCITX
@@ -459,9 +463,9 @@ InstallApp() {
 				ERROR
 			fi
 		elif [ "$FCITX" == y ]; then
-			pacman -S --noconfirm fcitx fcitx-configtool
+			pacman -S --noconfirm fcitx fcitx-configtool fcitx-qt4 fcitx-qt5
 			while [ "$AUR" == y ]; do
-				Y "Install Sogou Pinyin?" n
+				Y "Install Sogou Pinyin-[from archlinuxcn]?" n
 				N "  `BoW \"Press [ y ]\"`  for yes" n
 				N "  `BoW \"Press [ n ]\"`  for no"
 				read -n1 -s TMP
@@ -493,8 +497,8 @@ InstallApp() {
 		fi
 	done
 	# Netease-Cloud-Music
-	while [ true ]; do
-		Y "Install netease-cloud-music?" n
+	while [ "$AUR" == y ]; do
+		Y "Install Netease-Cloud-Music [163 Music, from archlinuxcn]?" n
 		N "  `BoW \"Press [ y ]\"`  for yes" n
 		N "  `BoW \"Press [ n ]\"`  for no"
 		read -n1 -s TMP
