@@ -147,7 +147,7 @@ InstallGrub() {
 	G "> GRUB" n
 	if (mount | grep efivarfs > /dev/null 2>&1); then
 		pacman -S --noconfirm grub efibootmgr -y
-		grub-install --target=`uname -m`-efi --efi-directory=/boot --bootloader-id=Arch-Grub
+		grub-install --target=`uname -m`-efi --efi-directory=/boot --bootloader-id=GRUB
 		grub-mkconfig -o /boot/grub/grub.cfg
 	else
 		pacman -S --noconfirm grub
@@ -520,6 +520,7 @@ InstallDesktop() {
 			break
 			;;
 		"I don't want to install them now")
+			DESKTOP="null"
 			break
 			;;
 		*)
@@ -528,7 +529,11 @@ InstallDesktop() {
 		esac
 	done
 	if [ "$FCITX" == y ]; then
-		echo -e "export GTK_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx" >> ~/.xprfile
+		if [ "$DESKTOP" == "null" ]; then
+			echo -e "export GTK_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx" >> ~/.xinitrc
+		else
+			echo -e "export GTK_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx" >> ~/.xprofile
+		fi
 	fi
 }
 
