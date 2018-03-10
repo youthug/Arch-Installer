@@ -530,9 +530,9 @@ InstallDesktop() {
 	done
 	if [ "$FCITX" == y ]; then
 		if [ "$DESKTOP" == "null" ]; then
-			echo -e "export GTK_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx" >> ~/.xinitrc
+			echo -e "export GTK_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx" >> /home/$USER/.xinitrc
 		else
-			echo -e "export GTK_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx" >> ~/.xprofile
+			echo -e "export GTK_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx" >> /home/$USER/.xprofile
 		fi
 	fi
 }
