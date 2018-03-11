@@ -531,8 +531,8 @@ InstallDesktop() {
 			break
 			;;
 		"KDE")
-			pacman -S --noconfirm plasma kdebase kdeutils kdegraphics kde-l10n-zh_cn sddm
-			systemctl enable sddm
+			pacman -S --noconfirm plasma kdebase kdeutils kdegraphics kde-l10n-zh_cn kdm
+			systemctl enable kdm
 			break
 			;;
 		"Xfce")
