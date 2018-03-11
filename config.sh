@@ -346,17 +346,17 @@ InstallApp() {
 		fi
 	elif [ "$AUR" == y ]; then
 		Y "Which one you want to use?"
-		select AURMIRROR in "USTC  [mirrors.ustc.edu.cn/]" "TUNA  [mirrors.tuna.tsinghua.edu.cn]" "163   [mirrors.163.com/]"; do
+		select AURMIRROR in "USTC  [mirrors.ustc.edu.cn]" "TUNA  [mirrors.tuna.tsinghua.edu.cn]" "163   [mirrors.163.com]"; do
 			case $AURMIRROR in
-			"USTC")
+			"USTC  [mirrors.ustc.edu.cn]")
 				echo -e "[archlinuxcn]\nServer = https://mirrors.ustc.edu.cn/archlinuxcn/\$arch" >> /etc/pacman.conf
 				break
 				;;
-			"TUNA")
+			"TUNA  [mirrors.tuna.tsinghua.edu.cn]")
 				echo -e "[archlinuxcn]\nServer = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/\$arch" >> /etc/pacman.conf
 				break
 				;;
-			"163")
+			"163   [mirrors.163.com]")
 				echo -e "[archlinuxcn]\nServer = http://mirrors.163.com/archlinux-cn/\$arch" >> /etc/pacman.conf
 				break
 				;;
